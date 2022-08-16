@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}
+G-Suite Manager
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <form class="d-flex flex-column my-3 align-items-top">
+    <div class="form-group col-6">
+      <label class="mb-3" for="inputSharedEmail">Delegate:</label>
+      <input type="email" class="form-control mb-3" id="inputSharedEmail" placeholder="Shared Email">
+      <button class="btn btn-success btn-sm">Show Current Delegates</button>
+    </div>
+
+    <div class="d-none mb-3">
+      <ul>
+        <li>
+          gonzaleza@ripon.edu
+        </li>
+        <li>
+          rodmang@ripon.edu
+        </li>
+      </ul>
+    </div>
+
+    <div class="form-group col-6 my-3">
+      <label class="mb-3" for="inputUserEmail">To:</label>
+      <input type="email" class="form-control" id="inputUserEmail" placeholder="User Email">
+    </div>
+
+    <div class="col-6">
+      <button type="submit" class="btn btn-primary ms-auto">Delegate</button>
+    </div>
+    
+  </form>
+</div>
+{% endblock %}

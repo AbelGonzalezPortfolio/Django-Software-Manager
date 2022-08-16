@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Computers
+{%endblock%}
+
+
+{% block content %}
+<div class="container">
+  <div class="row mt-3 mb-2">
+    {% comment %} Search {% endcomment %}
+    <div class="col-3">
+      <form action="?search" method="get" name="search">
+        {% csrf_token %}
+        <div class="form-group">
+          <div class="input-group">
+            <input id="search-box" class="form-control" type="text" name="search_string" placeholder="Search" aria-describedby="close-search" value="{{search_term}}">
+          </div>
+        </div>
+      </form>
+    </div>
+
+    {% comment %} Action Buttons {% endcomment %}
+    <div id="actionButtons" class="col d-none">
+      <div class="col-2">
+        <input form="computerSelect" class="btn btn-primary" type="submit" value="Sync" name="sync">
+      </div>
+      <div class="col-2">
+        <input class="btn btn-success" form="computerSelect"  type="submit" value="Enable Remoting" name="enable_remoting">
+      </div>
+    </div>
+    
+
+    {% comment %} Pagination {% endcomment %}
+    <div class="col">
+      <nav class="" aria-label="Page navigation example">
+        <ul class="pagination justify-content-end m-0 pagination-sm">
+          {% for page in page_range %}
+            <li class="page-item{% if page == "…" %}disabled{% endif %}">
+              <a 
+                id="page-link" 
+                class="page-link {% if page == page_obj.number %}active{% endif %} " 
+                href="{% if page != "…" %}?search_string={{ search_term }}&page={{page}}&{% if order_by %}order_by={{ order_by }}&order_ascending={{ order_ascending }}{% endif %}{% endif %}"
+              >
+                {{page}}
+              </a>
+              </li>
+          {% endfor%}
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  {% comment %} Table {% endcomment %}
+  <table class="table table-striped table-hover table-sm ">
+    <thead class="table-dark">
+      <tr>
+        <th><input type="checkbox" value="select-all" id="select-all"</th>
+        <th scope="col"><a class="sort-button" href="?search_string={{ search_term }}&page={{page_obj.number}}&order_by=hostname&order_ascending={% if order_by == "hostname"%}{{order_ascending|yesno:"False,True"}}{% else %}True{% endif %}">Hostname
+          {% if order_by == "hostname"%}
+            {% if order_ascending %}
+            <span class="">
+              &#129035;
+            </span>
+            {% else %}
+            <span class="">
+              &#129033;
+            </span>
+            {% endif %}
+          {% endif %}
+          </a>
+        </th>
+        <th scope="col"><a class="sort-button" href="?search_string={{ search_term }}&page={{page_obj.number}}&order_by=status&order_ascending={% if order_by == "status"%}{{order_ascending|yesno:"False,True"}}{% else %}True{% endif %}">Status
+          {% if order_by == "status"%}
+            {% if order_ascending %}
+            <span class="">
+              &#129035;
+            </span>
+            {% else %}
+            <span class="">
+              &#129033;
+            </span>
+            {% endif %}
+          {% endif %}
+        </a></th>
+        <th scope="col"><a class="sort-button" href="?search_string={{ search_term }}&page={{page_obj.number}}&order_by=ip&order_ascending={% if order_by == "ip"%}{{order_ascending|yesno:"False,True"}}{% else %}True{% endif %}">IP
+          {% if order_by == "ip"%}
+            {% if order_ascending %}
+            <span class="">
+              &#129035;
+            </span>
+            {% else %}
+            <span class="">
+              &#129033;
+            </span>
+            {% endif %}
+          {% endif %}
+        </a></th>
+        <th scope="col"><a class="sort-button" href="?search_string={{ search_term }}&page={{page_obj.number}}&order_by=date_modified&order_ascending={% if order_by == "date_modified"%}{{order_ascending|yesno:"False,True"}}{% else %}True{% endif %}">Last Synced
+          {% if order_by == "date_modified"%}
+            {% if order_ascending %}
+            <span class="">
+              &#129035;
+            </span>
+            {% else %}
+            <span class="">
+              &#129033;
+            </span>
+            {% endif %}
+          {% endif %}
+        </a></th>
+      </tr>
+      
+    </thead>
+
+    <form id="computerSelect" action="{% url 'computers' %}{% if page != "…" %}?search_string={{ search_term }}&page={{ page_obj.number }}&{% if order_by %}order_by={{ order_by }}&order_ascending={{ order_ascending }}{% endif %}{% endif %}" method="POST">
+      {% csrf_token %}
+      <tbody>
+        {% for computer in page_obj %}
+          <tr>
+            <td style="width: 2%"><input type="checkbox" class="form-check-input" id="{{computer.id}}" value="{{computer.id}}" name="choices"</td>
+            <td style="width: 25%"><a href="{% url 'computer_detail' id=computer.id %}">{{ computer.hostname }}</a></td>
+            <td style="width: 25%">{{ computer.status }}</td>
+            <td style="width: 25%">{{ computer.ip }}</td>
+            <td style="width: 23%">{{ computer.date_modified }}</td>
+          </tr>
+          
+        {% endfor %}
+      </tbody>
+      
+    </form>
+  </table>
+  
+</div>
+
+<script>
+  let selectAllButton = document.getElementById("select-all")
+  let choiceCheckboxes = document.getElementsByName("choices")
+  let actionButtons = document.getElementById("actionButtons")
+
+  function isAllUnchecked(){
+    for(let checkbox of choiceCheckboxes){
+      if(checkbox.checked){
+        return false
+      }
+    }
+    return true
+  }
+
+  selectAllButton.addEventListener("change", (e) => {
+    for(var i=0, n =choiceCheckboxes.length; i<n;i++){
+      choiceCheckboxes[i].checked = e.target.checked
+    }
+    if (e.target.checked){
+      actionButtons.classList.remove('d-none')
+      actionButtons.classList.add('d-flex')
+    } else {
+      actionButtons.classList.add('d-none')
+      actionButtons.classList.remove('d-flex')
+    }
+  })
+
+  for(var i=0, n=choiceCheckboxes.length; i<n;i++){
+    choiceCheckboxes[i].addEventListener("change", (e) => {
+      if(selectAllButton.checked){
+        selectAllButton.checked = false
+      }
+      if(e.target.checked){
+        actionButtons.classList.remove('d-none')
+        actionButtons.classList.add('d-flex')
+      } else if (isAllUnchecked()) {
+        actionButtons.classList.add('d-none')
+        actionButtons.classList.remove('d-flex')
+      }
+    })
+  }
+</script>
+
+{% endblock %}

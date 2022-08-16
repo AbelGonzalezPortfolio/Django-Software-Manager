@@ -1,0 +1,1 @@
+Get-ADComputer -Filter {enabled -eq $true} -SearchBase "<Workstations OU>" -Properties CN | Select-Object CN

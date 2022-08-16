@@ -1,0 +1,52 @@
+html {
+    scroll-behavior: smooth;
+}
+
+/* * {
+    outline: 1px solid red !important;
+} */
+
+@media (min-width: 768px) {
+    .navbar-brand {
+        font-size: 1.5em;
+        letter-spacing: 3px;
+    }
+
+    .nav-link {
+        padding: 15px;
+        margin: 0 10px;
+        letter-spacing: 3px;
+    }
+}
+
+@media (min-width: 992px) {
+}
+
+@media (min-width: 1200px) {
+
+}
+
+// XX-Large devices (larger desktops, 1400px and up)
+@media (min-width: 1400px) {
+
+}
+
+.nav-link:hover {
+    /* transition: .05s; */
+    margin-bottom: -2px;
+    border-bottom: 2px solid gray;
+}
+   
+#close-search {
+    cursor: pointer;
+}
+
+.sort-button {
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn:active{
+    background-color: white;
+}

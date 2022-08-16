@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Software
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row mt-3 mb-2">
+    {% comment %} Search {% endcomment %}
+    <div class="col-3">
+      <form action="?search" method="get" name="search">
+        {% csrf_token %}
+        <div class="form-group">
+          <div class="input-group">
+            <input id="search-box" class="form-control" type="text" name="search_string" placeholder="Search" aria-describedby="close-search" value="{{search_term}}">
+          </div>
+        </div>
+      </form>
+    </div>
+
+    {% comment %} Pagination {% endcomment %}
+    <div class="col">
+      <nav class="" aria-label="Page navigation example">
+        <ul class="pagination justify-content-end m-0 pagination-sm">
+          {% for page in page_range %}
+            <li class="page-item{% if page == "…" %}disabled{% endif %}">
+              <a 
+                id="page-link" 
+                class="page-link {% if page == page_obj.number %}active{% endif %} " 
+                href="{% if page != "…" %}?search_string={{ search_term }}&page={{page}}{% endif %}"
+              >
+                {{page}}
+              </a>
+              </li>
+          {% endfor%}
+        </ul>
+      </nav>
+    </div>
+  </div>
+  
+
+  <table class="table table-striped table-hover table-sm ">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Version</th>
+        <th scope="col">Clients</th>
+      </tr>
+      
+    </thead>
+    <tbody>
+      {% for software in page_obj %}
+        <tr>
+          <td><a href="{% url "software_detail" id=software.id %}">{{ software.name }}</a></td>
+          <td>{{ software.version }}</td>
+          <td>{{ software.clients }}</td>
+        </tr>
+        
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
